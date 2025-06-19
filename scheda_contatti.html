@@ -20,47 +20,44 @@
           <label class="block font-semibold" for="genitore1_nome">Nome</label>
           <input type="text" id="genitore1_nome" name="genitore1_nome" class="w-full p-2 border rounded" />
         </div>
-        <div class="mb-2">
-          <label class="block font-semibold" for="genitore1_email">Email</label>
-          <input type="email" id="genitore1_email" name="genitore1_email" class="w-full p-2 border rounded" />
+        <div class="mb-2 flex items-center gap-2">
+          <input type="email" id="genitore1_email" name="genitore1_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="gen1_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
         </div>
         <div class="mb-2 flex items-center gap-2">
           <label class="block font-semibold flex-grow" for="genitore1_telefono">Telefono</label>
           <input type="tel" id="genitore1_telefono" name="genitore1_telefono" class="flex-grow p-2 border rounded" />
-          <button type="button" id="gen1_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
-          <button type="button" id="gen1_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+          <button type="button" id="gen1_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="gen1_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
         </div>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold mb-2">Genitore 2</h2>
         <div class="mb-2">
-          <label class="block font-semibold" for="genitore2_nome">Nome</label>
-          <input type="text" id="genitore2_nome" name="genitore2_nome" class="w-full p-2 border rounded" />
-        </div>
-        <div class="mb-2">
-          <label class="block font-semibold" for="genitore2_email">Email</label>
-          <input type="email" id="genitore2_email" name="genitore2_email" class="w-full p-2 border rounded" />
+          <input type="text" id="genitore2_nome" name="genitore2_nome" class="w-full p-2 border rounded" placeholder="Nome" />
         </div>
         <div class="mb-2 flex items-center gap-2">
-          <label class="block font-semibold flex-grow" for="genitore2_telefono">Telefono</label>
+          <input type="email" id="genitore2_email" name="genitore2_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="gen2_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
+        </div>
+        <div class="mb-2 flex items-center gap-2">
           <input type="tel" id="genitore2_telefono" name="genitore2_telefono" class="flex-grow p-2 border rounded" />
-          <button type="button" id="gen2_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
-          <button type="button" id="gen2_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+          <button type="button" id="gen2_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="gen2_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
         </div>
       </section>
 
       <section>
         <h2 class="text-lg font-semibold mb-2">Esploratore</h2>
-        <div class="mb-2">
-          <label class="block font-semibold" for="esploratore_email">Email</label>
-          <input type="email" id="esploratore_email" name="esploratore_email" class="w-full p-2 border rounded" />
+        <div class="mb-2 flex items-center gap-2">
+          <input type="email" id="esploratore_email" name="esploratore_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="expl_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
         </div>
         <div class="mb-2 flex items-center gap-2">
-          <label class="block font-semibold flex-grow" for="esploratore_telefono">Telefono</label>
           <input type="tel" id="esploratore_telefono" name="esploratore_telefono" class="flex-grow p-2 border rounded" />
-          <button type="button" id="expl_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
-          <button type="button" id="expl_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+          <button type="button" id="expl_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="expl_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
         </div>
       </section>
 
@@ -89,21 +86,33 @@
       const whatsappBtn = document.getElementById(whatsappBtnId);
 
       phoneBtn.addEventListener('click', () => {
-        if (!phoneInput.value) return alert("Numero non inserito");
-        window.location.href = `tel:${phoneInput.value}`;
+        if (!phoneInput.value.trim()) return alert("Numero non inserito");
+        window.location.href = `tel:${phoneInput.value.trim()}`;
       });
       whatsappBtn.addEventListener('click', () => {
-        if (!phoneInput.value) return alert("Numero non inserito");
-        // Numeri italiani e in generale vanno senza + o 0 davanti su WhatsApp
+        if (!phoneInput.value.trim()) return alert("Numero non inserito");
         let num = phoneInput.value.replace(/\D/g,'');
         if(num.startsWith('0')) num = num.slice(1);
         window.open(`https://wa.me/${num}`, '_blank');
       });
     }
 
+    function setupEmailWriteButton(emailInputId, emailBtnId) {
+      const emailInput = document.getElementById(emailInputId);
+      const emailBtn = document.getElementById(emailBtnId);
+      emailBtn.addEventListener('click', () => {
+        if (!emailInput.value.trim()) return alert("Email non inserita");
+        window.location.href = `mailto:${emailInput.value.trim()}`;
+      });
+    }
+
     setupCallWhatsappButtons('genitore1_telefono', 'gen1_phone_btn', 'gen1_whatsapp_btn');
     setupCallWhatsappButtons('genitore2_telefono', 'gen2_phone_btn', 'gen2_whatsapp_btn');
     setupCallWhatsappButtons('esploratore_telefono', 'expl_phone_btn', 'expl_whatsapp_btn');
+
+    setupEmailWriteButton('genitore1_email', 'gen1_email_write_btn');
+    setupEmailWriteButton('genitore2_email', 'gen2_email_write_btn');
+    setupEmailWriteButton('esploratore_email', 'expl_email_write_btn');
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = 'login.html';
@@ -118,13 +127,11 @@
       }
       const currentUser = userSnap.data();
 
-      // Controllo permessi
       if (currentUser.ruolo !== "staff" && uidParam !== user.uid) {
         alert("Accesso negato");
         return window.location.href = 'login.html';
       }
 
-      // Recupera dati scheda target
       const targetRef = doc(db, "utenti", uidParam);
       const targetSnap = await getDoc(targetRef);
       if (!targetSnap.exists()) {
@@ -133,63 +140,4 @@
       }
       const scheda = targetSnap.data();
 
-      // Popola form
-      form['genitore1_nome'].value = scheda.datiScheda?.contatti?.genitore1?.nome || "";
-      form['genitore1_email'].value = scheda.datiScheda?.contatti?.genitore1?.email || "";
-      form['genitore1_telefono'].value = scheda.datiScheda?.contatti?.genitore1?.telefono || "";
-
-      form['genitore2_nome'].value = scheda.datiScheda?.contatti?.genitore2?.nome || "";
-      form['genitore2_email'].value = scheda.datiScheda?.contatti?.genitore2?.email || "";
-      form['genitore2_telefono'].value = scheda.datiScheda?.contatti?.genitore2?.telefono || "";
-
-      form['esploratore_email'].value = scheda.email || "";
-      form['esploratore_telefono'].value = scheda.telefono || "";
-
-      // Se non staff e sta vedendo la propria scheda, disabilita campi
-      if (currentUser.ruolo !== "staff" && uidParam === user.uid) {
-        for (const element of form.elements) {
-          if (element.tagName === "INPUT" || element.tagName === "BUTTON") {
-            element.disabled = true;
-          }
-        }
-        form.querySelector('button[type="submit"]').style.display = 'none';
-      }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (currentUser.ruolo !== "staff" && uidParam !== user.uid) return;
-
-        // Prepara dati contatti aggiornati
-        const contattiAggiornati = {
-          genitore1: {
-            nome: form['genitore1_nome'].value,
-            email: form['genitore1_email'].value,
-            telefono: form['genitore1_telefono'].value,
-          },
-          genitore2: {
-            nome: form['genitore2_nome'].value,
-            email: form['genitore2_email'].value,
-            telefono: form['genitore2_telefono'].value,
-          }
-        };
-
-        // Aggiorna scheda con contatti e email/telefono esploratore
-        try {
-          await setDoc(doc(db, "utenti", uidParam), {
-            datiScheda: {
-              contatti: contattiAggiornati,
-            },
-            email: form['esploratore_email'].value,
-            telefono: form['esploratore_telefono'].value,
-          }, { merge: true });
-          alert("Dati salvati con successo.");
-        } catch (error) {
-          console.error("Errore salvataggio dati:", error);
-          alert("Errore durante il salvataggio.");
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+      form['genitore1_nome'].value = scheda.dati

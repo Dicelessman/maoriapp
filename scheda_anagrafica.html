@@ -34,13 +34,24 @@
         <label class="block font-semibold mb-1" for="indirizzo">Indirizzo</label>
         <input type="text" id="indirizzo" name="indirizzo" class="w-full p-2 border rounded" required />
       </div>
-      <div>
-        <label class="block font-semibold mb-1" for="email">Email</label>
-        <input type="email" id="email" name="email" class="w-full p-2 border rounded" required />
+      <div class="flex items-center gap-2">
+        <div class="flex-grow">
+          <label class="block font-semibold mb-1" for="email">Email</label>
+          <input type="email" id="email" name="email" class="w-full p-2 border rounded" required />
+        </div>
+        <div class="flex flex-col gap-1">
+          <button type="button" id="email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
+        </div>
       </div>
-      <div>
-        <label class="block font-semibold mb-1" for="telefono">Telefono</label>
-        <input type="tel" id="telefono" name="telefono" class="w-full p-2 border rounded" />
+      <div class="flex items-center gap-2">
+        <div class="flex-grow">
+          <label class="block font-semibold mb-1" for="telefono">Telefono</label>
+          <input type="tel" id="telefono" name="telefono" class="w-full p-2 border rounded" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <button type="button" id="phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
+        </div>
       </div>
 
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salva</button>
@@ -62,6 +73,33 @@
       window.location.href = 'login.html';
     });
 
+    function updateButtonStates(isDisabled) {
+      emailWriteBtn.disabled = isDisabled || !form.email.value.trim();
+      phoneBtn.disabled = isDisabled || !form.telefono.value.trim();
+      whatsappBtn.disabled = isDisabled || !form.telefono.value.trim();
+    }
+
+    const emailWriteBtn = document.getElementById('email_write_btn');
+    const phoneBtn = document.getElementById('phone_btn');
+    const whatsappBtn = document.getElementById('whatsapp_btn');
+
+    emailWriteBtn.addEventListener('click', () => {
+      if (!form.email.value.trim()) return alert("Email non inserita");
+      window.location.href = `mailto:${form.email.value.trim()}`;
+    });
+
+    phoneBtn.addEventListener('click', () => {
+      if (!form.telefono.value.trim()) return alert("Numero telefono non inserito");
+      window.location.href = `tel:${form.telefono.value.trim()}`;
+    });
+
+    whatsappBtn.addEventListener('click', () => {
+      if (!form.telefono.value.trim()) return alert("Numero telefono non inserito");
+      let num = form.telefono.value.replace(/\D/g,'');
+      if(num.startsWith('0')) num = num.slice(1);
+      window.open(`https://wa.me/${num}`, '_blank');
+    });
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = 'login.html';
 
@@ -75,13 +113,11 @@
       }
       const currentUser = userSnap.data();
 
-      // Controllo permessi: staff può vedere/modificare chiunque, esploratore solo se è la sua scheda
       if (currentUser.ruolo !== "staff" && uidParam !== user.uid) {
         alert("Accesso negato");
         return window.location.href = 'login.html';
       }
 
-      // Recupera dati scheda target
       const targetRef = doc(db, "utenti", uidParam);
       const targetSnap = await getDoc(targetRef);
       if (!targetSnap.exists()) {
@@ -90,7 +126,6 @@
       }
       const scheda = targetSnap.data();
 
-      // Popola form con dati anagrafici
       form.nome.value = scheda.nome || "";
       form.cognome.value = scheda.cognome || "";
       form.dataNascita.value = scheda.dataNascita || "";
@@ -99,20 +134,24 @@
       form.email.value = scheda.email || "";
       form.telefono.value = scheda.telefono || "";
 
-      // Se non staff e sta vedendo la propria scheda, disabilita campi (solo visualizzazione)
+      let readOnly = false;
       if (currentUser.ruolo !== "staff" && uidParam === user.uid) {
+        readOnly = true;
         for (const element of form.elements) {
           if (element.tagName === "INPUT") element.disabled = true;
         }
         form.querySelector('button[type="submit"]').style.display = 'none';
       }
 
+      updateButtonStates(readOnly);
+
+      form.email.addEventListener('input', () => updateButtonStates(readOnly));
+      form.telefono.addEventListener('input', () => updateButtonStates(readOnly));
+
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        // Solo staff o il proprietario possono salvare (ma in realtà esploratori non possono modificare)
         if (currentUser.ruolo !== "staff" && uidParam !== user.uid) return;
 
-        // Aggiorna Firestore
         const datiAggiornati = {
           nome: form.nome.value,
           cognome: form.cognome.value,

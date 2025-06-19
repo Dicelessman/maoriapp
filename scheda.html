@@ -30,16 +30,24 @@
     import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
     const logoutBtn = document.getElementById('logoutBtn');
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        console.log('Logout effettuato con successo.');
-        window.location.href = 'login.html';
-      } catch (error) {
-        console.error('Errore durante il logout:', error);
-        alert('Errore durante il logout. Controlla la console.');
-      }
-    });
+
+    console.log('Logout button trovato?', logoutBtn);
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        console.log('Logout button cliccato');
+        try {
+          await signOut(auth);
+          console.log('Logout effettuato con successo.');
+          window.location.href = 'login.html';
+        } catch (error) {
+          console.error('Errore durante il logout:', error);
+          alert('Errore durante il logout. Controlla la console.');
+        }
+      });
+    } else {
+      console.error('Bottone logout NON trovato');
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {

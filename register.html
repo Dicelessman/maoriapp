@@ -1,0 +1,67 @@
+<!-- MaoriApp - File: register.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrazione - MaoriApp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-sm">
+    <h1 class="text-xl font-bold mb-4 text-center">Registrati su MaoriApp</h1>
+    <input id="nome" type="text" placeholder="Nome" class="mb-2 w-full p-2 border rounded" />
+    <input id="cognome" type="text" placeholder="Cognome" class="mb-2 w-full p-2 border rounded" />
+    <input id="email" type="email" placeholder="Email" class="mb-2 w-full p-2 border rounded" />
+    <input id="password" type="password" placeholder="Password" class="mb-2 w-full p-2 border rounded" />
+
+    <select id="ruolo" class="mb-4 w-full p-2 border rounded">
+      <option value="esploratore">Esploratore</option>
+      <option value="staff">Staff</option>
+    </select>
+
+    <button id="registerBtn" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">Registrati</button>
+    <p id="errorMsg" class="text-red-500 text-sm mt-2 hidden"></p>
+    <p class="text-center text-sm mt-4">Hai già un account? <a href="login.html" class="text-blue-600 underline">Login</a></p>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const registerBtn = document.getElementById('registerBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    registerBtn.addEventListener('click', async () => {
+      const nome = document.getElementById('nome').value.trim();
+      const cognome = document.getElementById('cognome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const ruolo = document.getElementById('ruolo').value;
+      const approvato = ruolo === "esploratore" ? true : false;
+
+      errorMsg.classList.add('hidden');
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        await setDoc(doc(db, "utenti", uid), {
+          nome,
+          cognome,
+          email,
+          ruolo,
+          approvato
+        });
+
+        alert("Registrazione completata. Effettua ora il login.");
+        window.location.href = "login.html";
+      } catch (err) {
+        errorMsg.textContent = err.message;
+        errorMsg.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

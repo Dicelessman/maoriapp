@@ -25,9 +25,11 @@
   </div>
 
   <script type="module">
-    import { auth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
     import { db } from './firebaseConfig.js';
     import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const auth = getAuth();
 
     const logoutBtn = document.getElementById('logoutBtn');
 
@@ -78,3 +80,4 @@
   </script>
 </body>
 </html>
+

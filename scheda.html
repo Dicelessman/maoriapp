@@ -1,0 +1,81 @@
+<!-- MaoriApp - File: scheda.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scheda Esploratore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Scheda Esploratore</h1>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+    </div>
+
+    <form id="schedaForm" class="space-y-4"></form>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const schedaForm = document.getElementById('schedaForm');
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+
+      const userRef = doc(db, "utenti", user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return;
+      const currentUser = userSnap.data();
+
+      const isStaff = currentUser.ruolo === "staff" && currentUser.approvato;
+      const targetUid = new URLSearchParams(window.location.search).get("uid") || user.uid;
+      const targetRef = doc(db, "utenti", targetUid);
+      const targetSnap = await getDoc(targetRef);
+      if (!targetSnap.exists()) return;
+      const scheda = targetSnap.data();
+
+      // Dati anagrafici
+      const anagrafica = ["nome", "cognome", "email"];
+      anagrafica.forEach(campo => {
+        const input = document.createElement('input');
+        input.className = "w-full p-2 border rounded";
+        input.value = scheda[campo] || "";
+        input.name = campo;
+        input.placeholder = campo.charAt(0).toUpperCase() + campo.slice(1);
+        input.disabled = !isStaff && targetUid !== user.uid;
+        schedaForm.appendChild(input);
+      });
+
+      if (isStaff || targetUid === user.uid) {
+        const saveBtn = document.createElement('button');
+        saveBtn.type = "submit";
+        saveBtn.className = "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600";
+        saveBtn.textContent = "Salva";
+        schedaForm.appendChild(saveBtn);
+
+        schedaForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(schedaForm);
+          const updated = {};
+          for (const [key, value] of formData.entries()) {
+            updated[key] = value;
+          }
+          await setDoc(targetRef, { ...scheda, ...updated }, { merge: true });
+          alert("Scheda salvata");
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!-- MaoriApp - File: dashboard.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - MaoriApp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Dashboard Staff</h1>
+    <div id="userList" class="space-y-2"></div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { collection, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const userList = document.getElementById('userList');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+
+      const userDoc = await (await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')).getDoc(doc(db, "utenti", user.uid));
+      const dati = userDoc.data();
+      if (!dati || dati.ruolo !== "staff" || !dati.approvato) {
+        return window.location.href = "login.html";
+      }
+
+      const querySnapshot = await getDocs(collection(db, "utenti"));
+      querySnapshot.forEach(docSnap => {
+        const userData = docSnap.data();
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded shadow";
+        card.innerHTML = `
+          <p><strong>${userData.nome} ${userData.cognome}</strong></p>
+          <p>Email: ${userData.email}</p>
+          <p>Ruolo: ${userData.ruolo}</p>
+          <p>Approvato: ${userData.approvato ? '✅' : '❌'}</p>
+          ${userData.ruolo === 'staff' && !userData.approvato ? `<button data-id="${docSnap.id}" class="approvaBtn bg-green-500 text-white px-2 py-1 rounded mt-2">Approva</button>` : ''}
+        `;
+        userList.appendChild(card);
+      });
+
+      // Gestione approvazione
+      userList.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('approvaBtn')) {
+          const uid = e.target.getAttribute('data-id');
+          await updateDoc(doc(db, "utenti", uid), { approvato: true });
+          alert("Utente approvato");
+          location.reload();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

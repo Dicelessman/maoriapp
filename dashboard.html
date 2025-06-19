@@ -1,60 +1,86 @@
-<!-- MaoriApp - File: scheda.html -->
+<!-- MaoriApp - File: dashboard.html -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scheda Esploratore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Staff</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-4">
-  <div class="max-w-2xl mx-auto">
+  <div class="max-w-4xl mx-auto">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Scheda Esploratore</h1>
+      <h1 class="text-3xl font-bold">Dashboard Staff</h1>
       <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
     </div>
 
-    <nav class="flex flex-wrap gap-2 mb-6">
-      <a href="scheda_anagrafica.html?uid=" id="anagraficaLink" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Anagrafica</a>
-      <a href="scheda_contatti.html?uid=" id="contattiLink" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Contatti</a>
-      <a href="scheda_sanitarie.html?uid=" id="sanitarieLink" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Sanitarie</a>
-      <a href="scheda_progressione.html?uid=" id="progressioneLink" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Progressione</a>
-      <!-- Altri link alle sezioni -->
-    </nav>
-
-    <p class="text-gray-600 text-sm">Seleziona una sezione per visualizzare o modificare i dati.</p>
+    <div id="userList" class="space-y-2">
+      <!-- Lista utenti caricata qui -->
+    </div>
   </div>
 
   <script type="module">
-    import { auth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
     import { db } from './firebaseConfig.js';
-    import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+    const auth = getAuth();
     const logoutBtn = document.getElementById('logoutBtn');
+    const userList = document.getElementById('userList');
+
     logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'login.html';
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Errore durante il logout:', error);
+        alert('Errore durante il logout. Controlla la console.');
+      }
     });
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = 'login.html';
-
-      const uidParam = new URLSearchParams(window.location.search).get("uid") || user.uid;
-      const userRef = doc(db, "utenti", user.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) return;
-      const userData = userSnap.data();
-
-      if (userData.ruolo !== 'staff' && uidParam !== user.uid) {
-        return window.location.href = 'login.html';
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
       }
 
-      document.getElementById('anagraficaLink').href += uidParam;
-      document.getElementById('contattiLink').href += uidParam;
-      document.getElementById('sanitarieLink').href += uidParam;
-      document.getElementById('progressioneLink').href += uidParam;
+      const userRef = doc(db, "utenti", user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        console.error('Utente non trovato nel db');
+        return;
+      }
+      const currentUser = userSnap.data();
+
+      if (currentUser.ruolo !== "staff" || !currentUser.approvato) {
+        alert("Accesso negato: non sei staff approvato.");
+        await signOut(auth);
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Recupera lista utenti
+      try {
+        const utentiCol = collection(db, "utenti");
+        const utentiSnapshot = await getDocs(utentiCol);
+        userList.innerHTML = '';
+
+        utentiSnapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          const div = document.createElement('div');
+          div.className = 'p-3 border rounded hover:bg-gray-200 cursor-pointer';
+          div.textContent = `${u.nome || ''} ${u.cognome || ''} — ${u.ruolo || ''} ${u.approvato ? '(approvato)' : '(non approvato)'}`;
+          div.onclick = () => {
+            window.location.href = `scheda.html?uid=${docSnap.id}`;
+          };
+          userList.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Errore nel recupero utenti:', err);
+        userList.textContent = 'Errore nel recupero utenti.';
+      }
     });
   </script>
 </body>
 </html>
+

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contatti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Contatti</h1>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+    </div>
+
+    <form id="contattiForm" class="space-y-6">
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Genitore 1</h2>
+        <div class="mb-2">
+          <label class="block font-semibold" for="genitore1_nome">Nome</label>
+          <input type="text" id="genitore1_nome" name="genitore1_nome" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2">
+          <label class="block font-semibold" for="genitore1_email">Email</label>
+          <input type="email" id="genitore1_email" name="genitore1_email" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <label class="block font-semibold flex-grow" for="genitore1_telefono">Telefono</label>
+          <input type="tel" id="genitore1_telefono" name="genitore1_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="gen1_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
+          <button type="button" id="gen1_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Genitore 2</h2>
+        <div class="mb-2">
+          <label class="block font-semibold" for="genitore2_nome">Nome</label>
+          <input type="text" id="genitore2_nome" name="genitore2_nome" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2">
+          <label class="block font-semibold" for="genitore2_email">Email</label>
+          <input type="email" id="genitore2_email" name="genitore2_email" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <label class="block font-semibold flex-grow" for="genitore2_telefono">Telefono</label>
+          <input type="tel" id="genitore2_telefono" name="genitore2_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="gen2_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
+          <button type="button" id="gen2_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Esploratore</h2>
+        <div class="mb-2">
+          <label class="block font-semibold" for="esploratore_email">Email</label>
+          <input type="email" id="esploratore_email" name="esploratore_email" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <label class="block font-semibold flex-grow" for="esploratore_telefono">Telefono</label>
+          <input type="tel" id="esploratore_telefono" name="esploratore_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="expl_phone_btn" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">📞</button>
+          <button type="button" id="expl_whatsapp_btn" class="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800">🟢</button>
+        </div>
+      </section>
+
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salva</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { db } from './firebaseConfig.js';
+    import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const auth = getAuth();
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const form = document.getElementById('contattiForm');
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    });
+
+    function setupCallWhatsappButtons(phoneInputId, phoneBtnId, whatsappBtnId) {
+      const phoneInput = document.getElementById(phoneInputId);
+      const phoneBtn = document.getElementById(phoneBtnId);
+      const whatsappBtn = document.getElementById(whatsappBtnId);
+
+      phoneBtn.addEventListener('click', () => {
+        if (!phoneInput.value) return alert("Numero non inserito");
+        window.location.href = `tel:${phoneInput.value}`;
+      });
+      whatsappBtn.addEventListener('click', () => {
+        if (!phoneInput.value) return alert("Numero non inserito");
+        // Numeri italiani e in generale vanno senza + o 0 davanti su WhatsApp
+        let num = phoneInput.value.replace(/\D/g,'');
+        if(num.startsWith('0')) num = num.slice(1);
+        window.open(`https://wa.me/${num}`, '_blank');
+      });
+    }
+
+    setupCallWhatsappButtons('genitore1_telefono', 'gen1_phone_btn', 'gen1_whatsapp_btn');
+    setupCallWhatsappButtons('genitore2_telefono', 'gen2_phone_btn', 'gen2_whatsapp_btn');
+    setupCallWhatsappButtons('esploratore_telefono', 'expl_phone_btn', 'expl_whatsapp_btn');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+
+      const uidParam = new URLSearchParams(window.location.search).get('uid') || user.uid;
+
+      const userRef = doc(db, "utenti", user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        alert("Utente non trovato.");
+        return window.location.href = 'login.html';
+      }
+      const currentUser = userSnap.data();
+
+      // Controllo permessi
+      if (currentUser.ruolo !== "staff" && uidParam !== user.uid) {
+        alert("Accesso negato");
+        return window.location.href = 'login.html';
+      }
+
+      // Recupera dati scheda target
+      const targetRef = doc(db, "utenti", uidParam);
+      const targetSnap = await getDoc(targetRef);
+      if (!targetSnap.exists()) {
+        alert("Scheda utente non trovata.");
+        return;
+      }
+      const scheda = targetSnap.data();
+
+      // Popola form
+      form['genitore1_nome'].value = scheda.datiScheda?.contatti?.genitore1?.nome || "";
+      form['genitore1_email'].value = scheda.datiScheda?.contatti?.genitore1?.email || "";
+      form['genitore1_telefono'].value = scheda.datiScheda?.contatti?.genitore1?.telefono || "";
+
+      form['genitore2_nome'].value = scheda.datiScheda?.contatti?.genitore2?.nome || "";
+      form['genitore2_email'].value = scheda.datiScheda?.contatti?.genitore2?.email || "";
+      form['genitore2_telefono'].value = scheda.datiScheda?.contatti?.genitore2?.telefono || "";
+
+      form['esploratore_email'].value = scheda.email || "";
+      form['esploratore_telefono'].value = scheda.telefono || "";
+
+      // Se non staff e sta vedendo la propria scheda, disabilita campi
+      if (currentUser.ruolo !== "staff" && uidParam === user.uid) {
+        for (const element of form.elements) {
+          if (element.tagName === "INPUT" || element.tagName === "BUTTON") {
+            element.disabled = true;
+          }
+        }
+        form.querySelector('button[type="submit"]').style.display = 'none';
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (currentUser.ruolo !== "staff" && uidParam !== user.uid) return;
+
+        // Prepara dati contatti aggiornati
+        const contattiAggiornati = {
+          genitore1: {
+            nome: form['genitore1_nome'].value,
+            email: form['genitore1_email'].value,
+            telefono: form['genitore1_telefono'].value,
+          },
+          genitore2: {
+            nome: form['genitore2_nome'].value,
+            email: form['genitore2_email'].value,
+            telefono: form['genitore2_telefono'].value,
+          }
+        };
+
+        // Aggiorna scheda con contatti e email/telefono esploratore
+        try {
+          await setDoc(doc(db, "utenti", uidParam), {
+            datiScheda: {
+              contatti: contattiAggiornati,
+            },
+            email: form['esploratore_email'].value,
+            telefono: form['esploratore_telefono'].value,
+          }, { merge: true });
+          alert("Dati salvati con successo.");
+        } catch (error) {
+          console.error("Errore salvataggio dati:", error);
+          alert("Errore durante il salvataggio.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

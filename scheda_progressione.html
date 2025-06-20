@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Progressione scout</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <nav>
-  <a href="scheda_anagrafica.html"><i data-lucide="user"></i> Dati</a> |
-  <a href="scheda_contatti.html"><i data-lucide="phone"></i> Contatti</a> |
-  <a href="scheda_sanitari.html"><i data-lucide="heart-pulse"></i> Sanitari</a> |
-  <a href="scheda_progressione.html"><i data-lucide="mountain"></i> Progressione</a> |
-  <a href="scheda_specialita.html"><i data-lucide="star"></i> Specialità</a> |
-  <a href="scheda_eventi.html"><i data-lucide="calendar-check"></i> Eventi</a> |
-  <a href="scheda_pagamenti.html"><i data-lucide="wallet"></i> Pagamenti</a>
-</nav>
+    <a href="scheda_anagrafica.html"><i data-lucide="user"></i> Dati</a> |
+    <a href="scheda_contatti.html"><i data-lucide="phone"></i> Contatti</a> |
+    <a href="scheda_sanitari.html"><i data-lucide="heart-pulse"></i> Sanitari</a> |
+    <a href="scheda_progressione.html"><i data-lucide="mountain"></i> Progressione</a> |
+    <a href="scheda_specialita.html"><i data-lucide="star"></i> Specialità</a> |
+    <a href="scheda_eventi.html"><i data-lucide="calendar-check"></i> Eventi</a> |
+    <a href="scheda_pagamenti.html"><i data-lucide="wallet"></i> Pagamenti</a>
+  </nav>
 
-
-  <h2>Progressione scout</h2>
-  <div id="dati-progressione"></div>
+  <h2>Progressione scout</h2><div id="dati-progressione"></div>
 
   <button id="logout-button">Logout</button>
 
@@ -33,8 +30,6 @@
           window.location.href = "login.html";
           return;
         }
-
-        lucide.createIcons();
 
         const uid = new URLSearchParams(window.location.search).get("uid");
         const currentUserUid = user.uid;
@@ -48,8 +43,8 @@
           });
         });
 
+        
         const div = document.getElementById("dati-progressione");
-
         firebase.firestore().collection("esploratori").doc(explorerUid).get()
           .then(doc => {
             if (doc.exists) {
@@ -68,7 +63,9 @@
             console.error("Errore:", err);
             div.innerHTML = "<p>Errore nel caricamento dei dati.</p>";
           });
+        
       });
+      lucide.createIcons();
     };
   </script>
 </body>

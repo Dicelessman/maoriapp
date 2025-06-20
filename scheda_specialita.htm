@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Specialità</title>
+</head>
+<body>
+  <nav style="margin: 1em 0; text-align: center;">
+    <a href="scheda_dati.html">Dati anagrafici</a> |
+    <a href="scheda_contatti.html">Contatti</a> |
+    <a href="scheda_sanitari.html">Sanitari</a> |
+    <a href="scheda_progressione.html">Progressione</a> |
+    <a href="scheda_specialita.html">Specialità</a> |
+    <a href="scheda_eventi.html">Eventi</a> |
+    <a href="scheda_pagamenti.html">Pagamenti</a>
+  </nav>
+
+  <h2>Specialità</h2>
+  <div id="contenuto-specialita">
+    <p>Questa sezione sarà disponibile a breve.</p>
+  </div>
+
+  <button id="logout-button">Logout</button>
+
+  <script src="firebase.js"></script>
+  <script>
+    window.onload = () => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const uid = new URLSearchParams(window.location.search).get("uid");
+        const currentUserUid = user.uid;
+        const isStaff = localStorage.getItem("role") === "staff";
+        const explorerUid = isStaff && uid ? uid : currentUserUid;
+
+        const logoutButton = document.getElementById("logout-button");
+        logoutButton.addEventListener("click", () => {
+          firebase.auth().signOut().then(() => {
+            window.location.href = "login.html";
+          });
+        });
+
+        // Quando saremo pronti, qui metteremo il caricamento dinamico delle specialità
+      });
+    };
+  </script>
+</body>
+</html>

@@ -21,11 +21,11 @@
     }
     .traccia { border: 1px solid #ccc; padding: 1em; margin-bottom: 2em; border-radius: 8px; background: white; }
     .direzione { margin-top: 1em; }
-    .sfida { display: flex; align-items: center; margin-bottom: 0.5em; }
-    .sfida input[type="checkbox"] { margin-right: 0.5em; }
-    .sfida label { flex-grow: 1; }
-    .sfida input[type="date"] { margin-left: 0.5em; }
-    textarea { width: 100%; min-height: 4em; margin-top: 0.5em; }
+    .sfida { display: flex; align-items: flex-start; margin-bottom: 1em; }
+    .sfida input[type="checkbox"] { margin-right: 0.5em; margin-top: 0.3em; }
+    .sfida label { flex-grow: 1; white-space: pre-line; }
+    .sfida input[type="date"] { margin-left: 1em; }
+    textarea { width: 100%; min-height: 4em; margin-top: 1em; }
     button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; }
   </style>
 </head>
@@ -56,6 +56,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { modelloProgressione } from "./mock_modello_progressione.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD-6i1p6Lgm9jY5Rbf_HMlDxybQ39xDr6s",
@@ -122,6 +123,13 @@
               <label for="${tIndex}_${direzione}_${sIndex}">${sfida.codice}: ${sfida.descrizione}</label>
               <input type="date" id="${tIndex}_${direzione}_${sIndex}_data" value="${sfida.data || ""}">
             `;
+            // Event listeners
+            sfidaDiv.querySelector("input[type='checkbox']").onchange = (e) => {
+              dati.tracce[tIndex].direzioni[direzione][sIndex].completata = e.target.checked;
+            };
+            sfidaDiv.querySelector("input[type='date']").onchange = (e) => {
+              dati.tracce[tIndex].direzioni[direzione][sIndex].data = e.target.value;
+            };
             direzioneDiv.appendChild(sfidaDiv);
           });
           blocco.appendChild(direzioneDiv);
@@ -134,8 +142,6 @@
         container.appendChild(blocco);
       });
     }
-
-    import { modelloProgressione } from "./mock_modello_progressione.js";
   </script>
 </body>
 </html>

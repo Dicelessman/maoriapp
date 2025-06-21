@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scheda Progressione</title>
+  <title>Progressione Verticale</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 1em; background: #f8f8f8; }
     h2 { color: #004b23; }
+    .menu {
+      background-color: #004b23;
+      padding: 1em;
+      margin-bottom: 1em;
+      border-radius: 8px;
+    }
+    .menu a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1em;
+      font-weight: bold;
+    }
     .traccia { border: 1px solid #ccc; padding: 1em; margin-bottom: 2em; border-radius: 8px; background: white; }
     .direzione { margin-top: 1em; }
     .sfida { display: flex; align-items: center; margin-bottom: 0.5em; }
@@ -18,7 +30,16 @@
   </style>
 </head>
 <body>
-  <h2>Progressione Scout</h2>
+  <div class="menu">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="scheda_dati.html">Dati Anagrafici</a>
+    <a href="scheda_contatti.html">Contatti</a>
+    <a href="scheda_progressione.html">Progressione</a>
+    <a href="scheda_specialita.html">Specialità</a>
+    <a href="logout.html">Logout</a>
+  </div>
+
+  <h2>Progressione Verticale</h2>
   <div>
     <label>Promessa: <input type="date" id="promessa"></label><br>
     <label>Ruolo:
@@ -37,59 +58,18 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBx-VWjsz6GqNu8k8EHTMT5K3ZHZSpTtN8",
-      authDomain: "repartapp.firebaseapp.com",
-      projectId: "repartapp",
-      storageBucket: "repartapp.appspot.com",
-      messagingSenderId: "499657225189",
-      appId: "1:499657225189:web:fe4c6f1fe8cf2aa026d097"
+      apiKey: "AIzaSyD-6i1p6Lgm9jY5Rbf_HMlDxybQ39xDr6s",
+      authDomain: "maoriapp.firebaseapp.com",
+      projectId: "maoriapp",
+      storageBucket: "maoriapp.appspot.com",
+      messagingSenderId: "1016506490211",
+      appId: "1:1016506490211:web:602119ef0cf4178703e3d4"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    let dati = {};
-
-    const promessaInput = document.getElementById("promessa");
-    const ruoloInputs = document.getElementsByName("ruolo");
-    const giglioInput = document.getElementById("giglio");
-    const noteGiglioInput = document.getElementById("noteGiglio");
-    const progressioneContainer = document.getElementById("progressioneContainer");
-    const saveBtn = document.getElementById("saveBtn");
-
-    const modelloProgressione = {
-  promessa: "",
-  giglio: "",
-  noteGiglio: "",
-  ruolo: "",
-  tracce: [
-    {
-      nome: "Traccia 1",
-      note: "",
-      direzioni: {
-        IO: [
-          { codice: "IO-1.1", descrizione: "Conosco il mio corpo: Scelgo un’attività fisica che non pratico già e mi impegno per tre mesi a svolgerla in autonomia (...) e sulla base di questa propongo un’attività di esercizi per un’uscita di Reparto.", completata: false, data: "" },
-          { codice: "IO-1.2", descrizione: "Sono consapevole delle azioni e dei comportamenti che metto in atto: Per tre mesi mi impegno a tenere traccia dei momenti significativi delle mie giornate che associo ai valori di Legge e Promessa, condividendoli in Ptg/Eqp.", completata: false, data: "" },
-          { codice: "IO-1.3", descrizione: "Riconosco le emozioni: Supporto il CP/CE o una Terza Traccia nell’organizzazione di due momenti di verifica di Ptg/Eqp. Mi impegno a esprimere le mie opinioni nei momenti di verifica di Reparto.", completata: false, data: "" },
-          { codice: "IO-1.4", descrizione: "Esprimo liberamente la mia creatività: Trovo, o costruisco, un oggetto insolito ma utile al mio equipaggiamento per la vita di Reparto, hike o campi, e dopo averlo testato più volte lo presento e ne spiego il funzionamento in un momento di Reparto.", completata: false, data: "" }
-        ],
-        RE: [
-          { codice: "RE-1.1", descrizione: "Riconosco il valore delle regole: Scelgo 3 articoli della Legge Scout e, durante una riunione di Reparto, porto per ognuno un esempio della vita di tutti i giorni in cui viene rispettato e uno in cui no.", completata: false, data: "" },
-          { codice: "RE-1.2", descrizione: "Comunico il mio punto di vista: Mi occupo insieme alla mia Ptg/Eqp di organizzare un momento di animazione per il Reparto, collaborando attivamente con tutti, e lo uso come spunto per migliorare la proposta di una seconda attività.", completata: false, data: "" },
-          { codice: "RE-1.3", descrizione: "Partecipo attivamente alla vita del gruppo: Sperimento almeno 3 Posti d'Azione e 2 Incarichi diversi, seguendo l'esempio di chi li ha tenuti prima di me.", completata: false, data: "" },
-          { codice: "RE-1.4", descrizione: "Riconosco l'unicita e la peculiarità degli altri: Per tre mesi mi occupo di raccontare le personalità dei membri della mia Ptg/Eqp attraverso racconti/immagini/video (...).", completata: false, data: "" }
-        ],
-        IM: [
-          { codice: "IM-1.1", descrizione: "Identifico dei progetti personali che voglio portare avanti: Propongo un gioco nuovo al mio Reparto o Ptg/Eqp, spiegando il regolamento ed aiutando i capi nel gestirlo.", completata: false, data: "" },
-          { codice: "IM-1.2", descrizione: "Scopro quali sono le mie competenze: Conquisto almeno 3 specialità di mio interesse.", completata: false, data: "" },
-          { codice: "IM-1.3", descrizione: "Osservo criticamente il contesto in cui opero: In Ptg/Eqp propongo, disegno e realizzo (in collaborazione con gli altri, se ho bisogno) almeno due migliorie utili alla vita di Ptg/Eqp/ al campo/ all'angolo in sede.", completata: false, data: "" },
-          { codice: "IM-1.4", descrizione: "Mi approccio con curiosità alle novità: Dopo aver vissuto un’esperienza scout con o senza il mio Rep/Ptg/Eqp, documento e racconto come l’ho vissuta.", completata: false, data: "" }
-        ]
-      }
-    }
-  ]
-};
+    let dati = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -99,109 +79,63 @@
         renderTracce();
         return;
       }
-
       const docRef = doc(db, "esploratori", user.uid);
-      const snap = await getDoc(docRef);
-
-      if (snap.exists()) {
-        dati = snap.data().progressione || JSON.parse(JSON.stringify(modelloProgressione));
-      } else {
-        dati = JSON.parse(JSON.stringify(modelloProgressione));
-      }
-
+      const docSnap = await getDoc(docRef);
+      dati = docSnap.exists() && docSnap.data().progressione ? docSnap.data().progressione : JSON.parse(JSON.stringify(modelloProgressione));
       inizializzaCampi();
       renderTracce();
+      document.getElementById("saveBtn").onclick = async () => {
+        dati.promessa = document.getElementById("promessa").value;
+        dati.ruolo = document.querySelector("input[name='ruolo']:checked")?.value || "";
+        dati.giglio = document.getElementById("giglio").value;
+        dati.noteGiglio = document.getElementById("noteGiglio").value;
+        await setDoc(docRef, { progressione: dati }, { merge: true });
+        alert("Progressione salvata");
+      };
     });
 
     function inizializzaCampi() {
-      promessaInput.value = dati.promessa || "";
-      giglioInput.value = dati.giglio || "";
-      noteGiglioInput.value = dati.noteGiglio || "";
-      ruoloInputs.forEach(r => { if (r.value === dati.ruolo) r.checked = true; });
+      document.getElementById("promessa").value = dati.promessa;
+      document.getElementById("giglio").value = dati.giglio;
+      document.getElementById("noteGiglio").value = dati.noteGiglio;
+      if (dati.ruolo) {
+        document.querySelector(`input[name='ruolo'][value='${dati.ruolo}']`).checked = true;
+      }
     }
 
     function renderTracce() {
-      progressioneContainer.innerHTML = "";
-      if (!dati.tracce) return;
-      dati.tracce.forEach((traccia, tracciaIndex) => {
-        const tracciaDiv = document.createElement("div");
-        tracciaDiv.className = "traccia";
-
-        const titolo = document.createElement("h3");
-        titolo.textContent = traccia.nome;
-        tracciaDiv.appendChild(titolo);
-
+      const container = document.getElementById("progressioneContainer");
+      container.innerHTML = "";
+      dati.tracce.forEach((traccia, tIndex) => {
+        const blocco = document.createElement("div");
+        blocco.className = "traccia";
+        blocco.innerHTML = `<h3>${traccia.nome}</h3>`;
         for (const direzione in traccia.direzioni) {
-          const dirDiv = document.createElement("div");
-          dirDiv.className = "direzione";
-
-          const dirTitle = document.createElement("h4");
-          dirTitle.textContent = direzione;
-          dirDiv.appendChild(dirTitle);
-
-          traccia.direzioni[direzione].forEach((sfida, sfidaIndex) => {
+          const direzioneDiv = document.createElement("div");
+          direzioneDiv.className = "direzione";
+          direzioneDiv.innerHTML = `<h4>${direzione}</h4>`;
+          traccia.direzioni[direzione].forEach((sfida, sIndex) => {
             const sfidaDiv = document.createElement("div");
             sfidaDiv.className = "sfida";
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.checked = sfida.completata;
-            checkbox.addEventListener("change", () => {
-              sfida.completata = checkbox.checked;
-              dateInput.disabled = !checkbox.checked;
-            });
-
-            const label = document.createElement("label");
-            label.textContent = `${sfida.codice} - ${sfida.descrizione}`;
-
-            const dateInput = document.createElement("input");
-            dateInput.type = "date";
-            dateInput.value = sfida.data;
-            dateInput.disabled = !sfida.completata;
-            dateInput.addEventListener("input", () => {
-              sfida.data = dateInput.value;
-            });
-
-            sfidaDiv.appendChild(checkbox);
-            sfidaDiv.appendChild(label);
-            sfidaDiv.appendChild(dateInput);
-            dirDiv.appendChild(sfidaDiv);
+            sfidaDiv.innerHTML = `
+              <input type="checkbox" id="${tIndex}_${direzione}_${sIndex}" ${sfida.completata ? "checked" : ""}>
+              <label for="${tIndex}_${direzione}_${sIndex}">${sfida.codice}: ${sfida.descrizione}</label>
+              <input type="date" id="${tIndex}_${direzione}_${sIndex}_data" value="${sfida.data || ""}">
+            `;
+            direzioneDiv.appendChild(sfidaDiv);
           });
-
-          tracciaDiv.appendChild(dirDiv);
+          blocco.appendChild(direzioneDiv);
         }
-
-        const noteLabel = document.createElement("label");
-        noteLabel.textContent = "Note:";
-        noteLabel.style.display = "block";
-        noteLabel.style.marginTop = "1em";
-
-        const noteTextarea = document.createElement("textarea");
-        noteTextarea.value = traccia.note;
-        noteTextarea.addEventListener("input", () => {
-          traccia.note = noteTextarea.value;
-        });
-
-        tracciaDiv.appendChild(noteLabel);
-        tracciaDiv.appendChild(noteTextarea);
-
-        progressioneContainer.appendChild(tracciaDiv);
+        const note = document.createElement("textarea");
+        note.placeholder = "Note della Traccia";
+        note.value = traccia.note;
+        note.oninput = (e) => dati.tracce[tIndex].note = e.target.value;
+        blocco.appendChild(note);
+        container.appendChild(blocco);
       });
     }
 
-    saveBtn.addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      dati.promessa = promessaInput.value;
-      dati.giglio = giglioInput.value;
-      dati.noteGiglio = noteGiglioInput.value;
-      dati.ruolo = [...ruoloInputs].find(r => r.checked)?.value || "";
-
-      const docRef = doc(db, "esploratori", user.uid);
-      await setDoc(docRef, { progressione: dati }, { merge: true });
-      alert("Progressione salvata correttamente.");
-    });
+    const modelloProgressione = { ... }; // completamento successivo
   </script>
 </body>
 </html>

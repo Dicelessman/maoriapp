@@ -93,8 +93,10 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        alert("Devi essere loggato per accedere a questa pagina.");
-        window.location.href = "login.html";
+        console.warn("⚠️ Utente non loggato. Modalità debug attiva.");
+        dati = JSON.parse(JSON.stringify(modelloProgressione));
+        inizializzaCampi();
+        renderTracce();
         return;
       }
 

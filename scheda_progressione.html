@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Progressione Verticale</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 1em; background: #f8f8f8; }
@@ -26,7 +26,7 @@
     .sfida label { flex-grow: 1; }
     .sfida input[type="date"] { margin-left: 0.5em; }
     textarea { width: 100%; min-height: 4em; margin-top: 0.5em; }
-    button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; cursor: pointer; }
+    button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; }
   </style>
 </head>
 <body>
@@ -41,287 +41,101 @@
 
   <h2>Progressione Verticale</h2>
   <div>
-    <label>Promessa: <input type="date" id="promessa" /></label><br />
+    <label>Promessa: <input type="date" id="promessa"></label><br>
     <label>Ruolo:
-      <input type="radio" name="ruolo" value="VCP" /> VCP
-      <input type="radio" name="ruolo" value="CP" /> CP
-    </label><br />
-    <label>Giglio/Trifoglio: <input type="date" id="giglio" /></label><br />
+      <input type="radio" name="ruolo" value="VCP"> VCP
+      <input type="radio" name="ruolo" value="CP"> CP
+    </label><br>
+    <label>Giglio/Trifoglio: <input type="date" id="giglio"></label><br>
     <label>Note Giglio/Trifoglio: <textarea id="noteGiglio"></textarea></label>
   </div>
-
   <div id="progressioneContainer"></div>
   <button id="saveBtn">Salva</button>
 
-  <!-- Firebase SDK (usa le tue versioni e config qui sotto) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // Firebase config: metti qui la tua config personale
     const firebaseConfig = {
-      apiKey: "TUO_API_KEY",
-      authDomain: "TUO_AUTH_DOMAIN",
-      projectId: "TUO_PROJECT_ID",
-      storageBucket: "TUO_STORAGE_BUCKET",
-      messagingSenderId: "TUO_MESSAGING_SENDER_ID",
-      appId: "TUO_APP_ID"
+      apiKey: "AIzaSyD-6i1p6Lgm9jY5Rbf_HMlDxybQ39xDr6s",
+      authDomain: "maoriapp.firebaseapp.com",
+      projectId: "maoriapp",
+      storageBucket: "maoriapp.appspot.com",
+      messagingSenderId: "1016506490211",
+      appId: "1:1016506490211:web:602119ef0cf4178703e3d4"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    // Qui i dati statici per descrizioni sfide, da incollare (li riduco per brevità, ma metti tutti i testi che vuoi)
-    const tracce = [
-      {
-        nome: "Traccia1",
-        direzioni: {
-          IO: [
-            { id: "IO-1.1", descrizione: "Conosco il mio corpo: Scelgo un’attività fisica..." },
-            { id: "IO-1.2", descrizione: "Sono consapevole delle azioni e dei comportamenti..." },
-            { id: "IO-1.3", descrizione: "Riconosco le emozioni: Supporto il CP/CE..." },
-            { id: "IO-1.4", descrizione: "Esprimo liberamente la mia creatività: Trovo o costruisco..." }
-          ],
-          RE: [
-            { id: "RE-1.1", descrizione: "Riconosco il valore delle regole: Scelgo 3 articoli..." },
-            { id: "RE-1.2", descrizione: "Comunico il mio punto di vista: Mi occupo di organizzare..." },
-            { id: "RE-1.3", descrizione: "Partecipo attivamente alla vita del gruppo..." },
-            { id: "RE-1.4", descrizione: "Riconosco l'unicità e la peculiarità degli altri..." }
-          ],
-          IM: [
-            { id: "IM-1.1", descrizione: "Identifico dei progetti personali..." },
-            { id: "IM-1.2", descrizione: "Scopro quali sono le mie competenze..." },
-            { id: "IM-1.3", descrizione: "Osservo criticamente il contesto in cui opero..." },
-            { id: "IM-1.4", descrizione: "Mi approccio con curiosità alle novità..." }
-          ]
-        }
-      },
-      {
-        nome: "Traccia2",
-        direzioni: {
-          IO: [
-            { id: "IO-2.1", descrizione: "Esploro i limiti del mio corpo confrontandomi con me stesso..." },
-            { id: "IO-2.2", descrizione: "Identifico le motivazioni dietro le mie azioni..." },
-            { id: "IO-2.3", descrizione: "Esploro con curiosità le esperienze che vivo..." },
-            { id: "IO-2.4", descrizione: "Sono aperto a mettere in discussione le mie idee ed opinioni..." }
-          ],
-          RE: [
-            { id: "RE-2.1", descrizione: "Mi chiedo il perché delle regole..." },
-            { id: "RE-2.2", descrizione: "Utilizzo con consapevolezza le varie modalità di comunicazione..." },
-            { id: "RE-2.3", descrizione: "Vivo serenamente il confronto con l’altro..." },
-            { id: "RE-2.4", descrizione: "Conosco e rispetto i bisogni e le necessità di chi mi sta intorno..." }
-          ],
-          IM: [
-            { id: "IM-2.1", descrizione: "Contribuisco attivamente ai progetti di gruppo..." },
-            { id: "IM-2.2", descrizione: "Sono parte attiva nel gruppo..." },
-            { id: "IM-2.3", descrizione: "Partecipo alle decisioni strategiche del gruppo..." },
-            { id: "IM-2.4", descrizione: "Confronto più punti di vista per strutturare la mia opinione..." }
-          ]
-        }
-      },
-      {
-        nome: "Traccia3",
-        direzioni: {
-          IO: [
-            { id: "IO-3.1", descrizione: "Affronto le sfide che incontro con serenità..." },
-            { id: "IO-3.2", descrizione: "Sono coerente e d'esempio in tutti gli ambienti..." },
-            { id: "IO-3.3", descrizione: "Riconosco l'importanza del mio benessere..." },
-            { id: "IO-3.4", descrizione: "Interagisco con gli altri per risolvere le sfide comuni..." }
-          ],
-          RE: [
-            { id: "RE-3.1", descrizione: "Sono d’esempio e promuovo occasioni di coinvolgimento nel gruppo..." },
-            { id: "RE-3.2", descrizione: "Trasmetto e riconosco le mie emozioni..." },
-            { id: "RE-3.3", descrizione: "Creo un ambiente sicuro, accogliente e pacifico per tutti..." },
-            { id: "RE-3.4", descrizione: "Valorizzo le idee e le caratteristiche dei miei compagni..." }
-          ],
-          IM: [
-            { id: "IM-3.1", descrizione: "Coordino i progetti di gruppo, valorizzando i miei collaboratori..." },
-            { id: "IM-3.2", descrizione: "Condivido competenze ed esperienze con il resto del gruppo..." },
-            { id: "IM-3.3", descrizione: "Porto avanti le mie idee democraticamente..." },
-            { id: "IM-3.4", descrizione: "Immagino, pianifico e realizzo i miei obiettivi e quelli del gruppo..." }
-          ]
-        }
-      }
-    ];
-
-    // Crea markup form dinamico in #progressioneContainer
-    function creaMarkupProgressione() {
-      const container = document.getElementById("progressioneContainer");
-      container.innerHTML = "";
-      tracce.forEach((traccia, i) => {
-        const divTraccia = document.createElement("div");
-        divTraccia.className = "traccia";
-
-        const h3 = document.createElement("h3");
-        h3.textContent = `Traccia ${i + 1}`;
-        divTraccia.appendChild(h3);
-
-        for (const direzione of ["IO", "RE", "IM"]) {
-          const divDir = document.createElement("div");
-          divDir.className = "direzione";
-
-          const h4 = document.createElement("h4");
-          h4.textContent = direzione;
-          divDir.appendChild(h4);
-
-          traccia.direzioni[direzione].forEach((sfida, idx) => {
-            const divSfida = document.createElement("div");
-            divSfida.className = "sfida";
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.id = `checkbox-${direzione}-${i + 1}-${idx + 1}`;
-            checkbox.dataset.tracciaIndex = i;
-            checkbox.dataset.direzione = direzione;
-            checkbox.dataset.sfidaIndex = idx;
-
-            const label = document.createElement("label");
-            label.htmlFor = checkbox.id;
-            label.textContent = sfida.descrizione;
-
-            const dataInput = document.createElement("input");
-            dataInput.type = "date";
-            dataInput.id = `${checkbox.id}-data`;
-            dataInput.dataset.tracciaIndex = i;
-            dataInput.dataset.direzione = direzione;
-            dataInput.dataset.sfidaIndex = idx;
-            dataInput.style.marginLeft = "0.5em";
-
-            divSfida.appendChild(checkbox);
-            divSfida.appendChild(label);
-            divSfida.appendChild(dataInput);
-            divDir.appendChild(divSfida);
-          });
-
-          divTraccia.appendChild(divDir);
-        }
-
-        // Note dopo ogni traccia
-        const noteLabel = document.createElement("label");
-        noteLabel.textContent = "Note Traccia:";
-        const noteTextarea = document.createElement("textarea");
-        noteTextarea.id = `Traccia${i + 1}-note`;
-        noteTextarea.dataset.tracciaIndex = i;
-        noteTextarea.style.marginTop = "0.5em";
-
-        divTraccia.appendChild(noteLabel);
-        divTraccia.appendChild(noteTextarea);
-
-        container.appendChild(divTraccia);
-      });
-    }
-
-    creaMarkupProgressione();
-
-    // Gestione Firebase e dati
-
-    let progressioneData = null;
+    let dati = null;
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log("Utente loggato:", user.uid);
-        await caricaDatiProgressione(user.uid);
-      } else {
-        alert("Devi essere loggato per accedere a questa pagina.");
-        window.location.href = "login.html";
+      if (!user) {
+        console.warn("⚠️ Utente non loggato. Modalità debug attiva.");
+        dati = JSON.parse(JSON.stringify(modelloProgressione));
+        inizializzaCampi();
+        renderTracce();
+        return;
       }
+      const docRef = doc(db, "esploratori", user.uid);
+      const docSnap = await getDoc(docRef);
+      dati = docSnap.exists() && docSnap.data().progressione ? docSnap.data().progressione : JSON.parse(JSON.stringify(modelloProgressione));
+      inizializzaCampi();
+      renderTracce();
+      document.getElementById("saveBtn").onclick = async () => {
+        dati.promessa = document.getElementById("promessa").value;
+        dati.ruolo = document.querySelector("input[name='ruolo']:checked")?.value || "";
+        dati.giglio = document.getElementById("giglio").value;
+        dati.noteGiglio = document.getElementById("noteGiglio").value;
+        await setDoc(docRef, { progressione: dati }, { merge: true });
+        alert("Progressione salvata");
+      };
     });
 
-    async function caricaDatiProgressione(uid) {
-      try {
-        const docRef = doc(db, "progressioni", uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          progressioneData = docSnap.data();
-          console.log("Dati progressione caricati:", progressioneData);
-          popolaForm(progressioneData);
-        } else {
-          console.log("Nessun dato progressione trovato, creo struttura vuota.");
-          progressioneData = creaStrutturaVuota();
-          popolaForm(progressioneData);
-        }
-      } catch (error) {
-        console.error("Errore caricamento dati progressione:", error);
+    function inizializzaCampi() {
+      document.getElementById("promessa").value = dati.promessa;
+      document.getElementById("giglio").value = dati.giglio;
+      document.getElementById("noteGiglio").value = dati.noteGiglio;
+      if (dati.ruolo) {
+        document.querySelector(`input[name='ruolo'][value='${dati.ruolo}']`).checked = true;
       }
     }
 
-    function creaStrutturaVuota() {
-      return {
-        promessa: "",
-        ruolo: "",
-        giglio: "",
-        noteGiglio: "",
-        tracce: [
-          { note: "", direzioni: { IO: [], RE: [], IM: [] } },
-          { note: "", direzioni: { IO: [], RE: [], IM: [] } },
-          { note: "", direzioni: { IO: [], RE: [], IM: [] } }
-        ]
-      };
-    }
-
-    function popolaForm(data) {
-      document.getElementById("promessa").value = data.promessa || "";
-      if (data.ruolo) {
-        const radio = document.querySelector(`input[name="ruolo"][value="${data.ruolo}"]`);
-        if (radio) radio.checked = true;
-      }
-      document.getElementById("giglio").value = data.giglio || "";
-      document.getElementById("noteGiglio").value = data.noteGiglio || "";
-
-      data.tracce.forEach((traccia, i) => {
-        if (traccia.note) {
-          const noteArea = document.getElementById(`Traccia${i + 1}-note`);
-          if (noteArea) noteArea.value = traccia.note;
-        }
-        ["IO", "RE", "IM"].forEach(direzione => {
-          traccia.direzioni[direzione].forEach((sfida, idx) => {
-            const checkbox = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}`);
-            if (checkbox) checkbox.checked = sfida.completata || false;
-
-            const dataInput = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}-data`);
-            if (dataInput) dataInput.value = sfida.data || "";
+    function renderTracce() {
+      const container = document.getElementById("progressioneContainer");
+      container.innerHTML = "";
+      dati.tracce.forEach((traccia, tIndex) => {
+        const blocco = document.createElement("div");
+        blocco.className = "traccia";
+        blocco.innerHTML = `<h3>${traccia.nome}</h3>`;
+        for (const direzione in traccia.direzioni) {
+          const direzioneDiv = document.createElement("div");
+          direzioneDiv.className = "direzione";
+          direzioneDiv.innerHTML = `<h4>${direzione}</h4>`;
+          traccia.direzioni[direzione].forEach((sfida, sIndex) => {
+            const sfidaDiv = document.createElement("div");
+            sfidaDiv.className = "sfida";
+            sfidaDiv.innerHTML = `
+              <input type="checkbox" id="${tIndex}_${direzione}_${sIndex}" ${sfida.completata ? "checked" : ""}>
+              <label for="${tIndex}_${direzione}_${sIndex}">${sfida.codice}: ${sfida.descrizione}</label>
+              <input type="date" id="${tIndex}_${direzione}_${sIndex}_data" value="${sfida.data || ""}">
+            `;
+            direzioneDiv.appendChild(sfidaDiv);
           });
-        });
+          blocco.appendChild(direzioneDiv);
+        }
+        const note = document.createElement("textarea");
+        note.placeholder = "Note della Traccia";
+        note.value = traccia.note;
+        note.oninput = (e) => dati.tracce[tIndex].note = e.target.value;
+        blocco.appendChild(note);
+        container.appendChild(blocco);
       });
     }
 
-    async function salvaDati() {
-      progressioneData.promessa = document.getElementById("promessa").value;
-      const ruoloRadio = document.querySelector('input[name="ruolo"]:checked');
-      progressioneData.ruolo = ruoloRadio ? ruoloRadio.value : "";
-      progressioneData.giglio = document.getElementById("giglio").value;
-      progressioneData.noteGiglio = document.getElementById("noteGiglio").value;
-
-      progressioneData.tracce.forEach((traccia, i) => {
-        const noteArea = document.getElementById(`Traccia${i + 1}-note`);
-        traccia.note = noteArea ? noteArea.value : "";
-
-        ["IO", "RE", "IM"].forEach(direzione => {
-          traccia.direzioni[direzione].forEach((sfida, idx) => {
-            const checkbox = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}`);
-            sfida.completata = checkbox ? checkbox.checked : false;
-
-            const dataInput = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}-data`);
-            sfida.data = dataInput ? dataInput.value : "";
-          });
-        });
-      });
-
-      try {
-        const user = auth.currentUser;
-        if (!user) throw new Error("Utente non autenticato");
-        const docRef = doc(db, "progressioni", user.uid);
-        await setDoc(docRef, progressioneData);
-        alert("Dati salvati con successo.");
-      } catch (error) {
-        console.error("Errore salvataggio dati:", error);
-        alert("Errore durante il salvataggio dei dati.");
-      }
-    }
-
-    document.getElementById("saveBtn").addEventListener("click", salvaDati);
+    import { modelloProgressione } from "./mock_modello_progressione.js";
   </script>
 </body>
 </html>

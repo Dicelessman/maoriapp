@@ -19,52 +19,14 @@
       margin-right: 1em;
       font-weight: bold;
     }
-    .traccia {
-      border: 1px solid #ccc;
-      padding: 1em;
-      margin-bottom: 2em;
-      border-radius: 8px;
-      background: white;
-    }
-    .direzione {
-      margin-top: 1em;
-    }
-    .sfida {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5em;
-    }
-    .sfida input[type="checkbox"] {
-      margin-right: 0.5em;
-    }
-    .sfida label {
-      flex-grow: 1;
-    }
-    .sfida input[type="date"] {
-      margin-left: 0.5em;
-    }
-    textarea {
-      width: 100%;
-      min-height: 4em;
-      margin-top: 0.5em;
-    }
-    button {
-      margin-top: 1em;
-      padding: 0.5em 1em;
-      font-size: 1em;
-      background-color: #004b23;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #006622;
-    }
-    label {
-      display: block;
-      margin-top: 0.5em;
-    }
+    .traccia { border: 1px solid #ccc; padding: 1em; margin-bottom: 2em; border-radius: 8px; background: white; }
+    .direzione { margin-top: 1em; }
+    .sfida { display: flex; align-items: center; margin-bottom: 0.5em; }
+    .sfida input[type="checkbox"] { margin-right: 0.5em; }
+    .sfida label { flex-grow: 1; }
+    .sfida input[type="date"] { margin-left: 0.5em; }
+    textarea { width: 100%; min-height: 4em; margin-top: 0.5em; }
+    button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -78,148 +40,154 @@
   </div>
 
   <h2>Progressione Verticale</h2>
-
   <div>
-    <label>Promessa: <input type="date" id="promessa" /></label>
-    <label>
-      Ruolo:
-      <input type="radio" name="ruolo" value="VCP" id="ruoloVCP" /><label for="ruoloVCP" style="display:inline;">VCP</label>
-      <input type="radio" name="ruolo" value="CP" id="ruoloCP" /><label for="ruoloCP" style="display:inline;">CP</label>
-    </label>
-    <label>Giglio/Trifoglio: <input type="date" id="giglio" /></label>
-    <label>Note Giglio/Trifoglio:<textarea id="noteGiglio"></textarea></label>
+    <label>Promessa: <input type="date" id="promessa" /></label><br />
+    <label>Ruolo:
+      <input type="radio" name="ruolo" value="VCP" /> VCP
+      <input type="radio" name="ruolo" value="CP" /> CP
+    </label><br />
+    <label>Giglio/Trifoglio: <input type="date" id="giglio" /></label><br />
+    <label>Note Giglio/Trifoglio: <textarea id="noteGiglio"></textarea></label>
   </div>
 
   <div id="progressioneContainer"></div>
-
   <button id="saveBtn">Salva</button>
 
-  <script>
-    const modelloProgressione = {
-      promessa: "",
-      ruolo: "",
-      giglio: "",
-      noteGiglio: "",
-      tracce: [
-        {
-          nome: "Traccia 1",
-          note: "",
-          direzioni: {
-            IO: [
-              { codice: "IO-1.1", descrizione: "Conosco il mio corpo: Scelgo un’attività fisica che non pratico già e mi impegno per tre mesi a svolgerla in autonomia (...) e sulla base di questa propongo un’attività di esercizi per un’uscita di Reparto.", completata: false, data: "" },
-              { codice: "IO-1.2", descrizione: "Sono consapevole delle azioni e dei comportamenti che metto in atto: Per tre mesi mi impegno a tenere traccia dei momenti significativi delle mie giornate che associo ai valori di Legge e Promessa, condividendoli in Ptg/Eqp.", completata: false, data: "" },
-              { codice: "IO-1.3", descrizione: "Riconosco le emozioni: Supporto il CP/CE o una Terza Traccia nell’organizzazione di due momenti di verifica di Ptg/Eqp. Mi impegno a esprimere le mie opinioni nei momenti di verifica di Reparto.", completata: false, data: "" },
-              { codice: "IO-1.4", descrizione: "Esprimo liberamente la mia creatività: Trovo, o costruisco, un oggetto insolito ma utile al mio equipaggiamento per la vita di Reparto, hike o campi, e dopo averlo testato più volte lo presento e ne spiego il funzionamento in un momento di Reparto.", completata: false, data: "" }
-            ],
-            RE: [
-              { codice: "RE-1.1", descrizione: "Riconosco il valore delle regole: Scelgo 3 articoli della Legge Scout e, durante una riunione di Reparto, porto per ognuno un esempio della vita di tutti i giorni in cui viene rispettato e uno in cui no.", completata: false, data: "" },
-              { codice: "RE-1.2", descrizione: "Comunico il mio punto di vista: Mi occupo insieme alla mia Ptg/Eqp di organizzare un momento di animazione per il Reparto, collaborando attivamente con tutti, e lo uso come spunto per migliorare la proposta di una seconda attività.", completata: false, data: "" },
-              { codice: "RE-1.3", descrizione: "Partecipo attivamente alla vita del gruppo: Sperimento almeno 3 Posti d'Azione e 2 Incarichi diversi, seguendo l'esempio di chi li ha tenuti prima di me.", completata: false, data: "" },
-              { codice: "RE-1.4", descrizione: "Riconosco l'unicita e la peculiarità degli altri: Per tre mesi mi occupo di raccontare le personalità dei membri della mia Ptg/Eqp attraverso racconti/immagini/video (...).", completata: false, data: "" }
-            ],
-            IM: [
-              { codice: "IM-1.1", descrizione: "Identifico dei progetti personali che voglio portare avanti: Propongo un gioco nuovo al mio Reparto o Ptg/Eqp, spiegando il regolamento ed aiutando i capi nel gestirlo.", completata: false, data: "" },
-              { codice: "IM-1.2", descrizione: "Scopro quali sono le mie competenze: Conquisto almeno 3 specialità di mio interesse. (Nota: Le specialità fanno parte della Progressione Orizzontale, come discusso in precedenza e mostrato in-, ma la loro conquista è un'attività specifica della Traccia 1).", completata: false, data: "" },
-              { codice: "IM-1.3", descrizione: "Osservo criticamente il contesto in cui opero: In Ptg/Eqp propongo, disegno e realizzo (in collaborazione con gli altri, se ho bisogno) almeno due migliorie utili alla vita di Ptg/Eqp/ al campo/ all'angolo in sede.", completata: false, data: "" },
-              { codice: "IM-1.4", descrizione: "Mi approccio con curiosità alle novità: Dopo aver vissuto un’esperienza scout con o senza il mio Rep/Ptg/Eqp, documento e racconto come l’ho vissuta.", completata: false, data: "" }
-            ]
-          }
-        },
-        {
-          nome: "Traccia 2",
-          note: "",
-          direzioni: {
-            IO: [
-              { codice: "IO-2.1", descrizione: "Esploro i limiti del mio corpo confrontandomi con me stesso e con gli altri: Collaboro (con un capo/senior) nell'ideare un menù bilanciato e salutare per due uscite/campi di Reparto, ampliando poi il ricettario della mia Ptg/Eqp.", completata: false, data: "" },
-              { codice: "IO-2.2", descrizione: "Identifico le motivazioni dietro le mie azioni: Contribuisco all’organizzazione di un’attività del percorso Promessa o CdL ideata dallo Staff, portando un contributo basato sulle esperienze che mi toccano da vicino o ho letto/visto.", completata: false, data: "" },
-              { codice: "IO-2.3", descrizione: "Esploro con curiosità le esperienze che vivo: Partecipo ad un evento al di fuori del Reparto (...) e al mio ritorno porto al Reparto il racconto dell'esperienza (...) evidenziando \"Lo consiglierei ad altri Esplo? perchè?\".", completata: false, data: "" },
-              { codice: "IO-2.4", descrizione: "Sono aperto a mettere in discussione le mie idee ed opinioni: Propongo per una riunione di Ptg/Eqp un’esperienza che riguardi un tema per me importante (...), al termine del quale aiuto a condurre un confronto su come io e gli altri lo abbiamo vissuto.", completata: false, data: "" }
-            ],
-            RE: [
-              { codice: "RE-2.1", descrizione: "Mi chiedo il perché delle regole: Aiuto nel definire e far rispettare un patto scritto di regole interno alla Ptg/Eqp o Reparto per almeno un evento (...).", completata: false, data: "" },
-              { codice: "RE-2.2", descrizione: "Utilizzo con consapevolezza le varie modalità di comunicazione: Partecipo attivamente alla progettazione e realizzazione dell'animazione di un fuoco di bivacco, prima di Ptg/Eqp e poi di Reparto/Gruppo, curandone tema e messaggi.", completata: false, data: "" },
-              { codice: "RE-2.3", descrizione: "Vivo serenamente il confronto con l’altro: Propongo un'uscita di Ptg/Eqp di conoscenza fuori dal Reparto (...) e collaboro attivamente alla sua riuscita.", completata: false, data: "" },
-              { codice: "RE-2.4", descrizione: "Conosco e rispetto i bisogni e le necessità di chi mi sta intorno: Mi impegno a conquistare due specialità di Impegno Civile facendo squadra ogni volta con un altro/a Esplo con cui ho legato meno del Reparto.", completata: false, data: "" }
-            ],
-            IM: [
-              { codice: "IM-2.1", descrizione: "Contribuisco attivamente ai progetti di gruppo: Porto una mia idea motivata in consiglio di Ptg/Eqp per un progetto o attività da fare insieme e contribuisco alla sua realizzazione (...).", completata: false, data: "" },
-              { codice: "IM-2.2", descrizione: "Sono parte attiva nel gruppo: Organizzo un momento per gli altri, da solo o con l’aiuto della Ptg/Eqp, in cui porto e condivido le mie competenze in un ambito che mi piace (...).", completata: false, data: "" },
-              { codice: "IM-2.3", descrizione: "Partecipo alle decisioni strategiche del gruppo: Contribuisco a identificare aspetti da poter migliorare nella vita di Ptg/Eqp durante almeno due CdP e mi propongo nei ruoli che li risolvano, verificando poi com’è andata.", completata: false, data: "" },
-              { codice: "IM-2.4", descrizione: "Confronto più punti di vista per strutturare la mia opinione: Svolgo una ricerca utile alla mia Ptg/Eqp oppure Reparto organizzando e conducendo diverse interviste (...) mettendo insieme il risultato per presentarlo in una riunione.", completata: false, data: "" }
-            ]
-          }
-        },
-        {
-          nome: "Traccia 3",
-          note: "",
-          direzioni: {
-            IO: [
-              { codice: "IO-3.1", descrizione: "Affronto le sfide che incontro con serenità: Partecipo ad un’occasione al di fuori del Reparto (...), riportando qualcosa della mia esperienza con un’attività in Ptg/Eqp/Reparto.", completata: false, data: "" },
-              { codice: "IO-3.2", descrizione: "Sono coerente e d'esempio in tutti gli ambienti in cui vivo: Faccio da tutor ad un nuovo/a Esplo della mia Ptg/Eqp per 6 mesi nella conquista della specialità e/o nell'affrontare le sue sfide per il raggiungimento della Traccia.", completata: false, data: "" },
-              { codice: "IO-3.3", descrizione: "Riconosco l'importanza del mio benessere: Preparo un momento a tema benessere e dipendenze da poter inserire in un’attività di CdR/Alta Pattuglia/gruppo delle III tracce, confrontandomi con lo staff e portando il mio punto di vista ed esperienza.", completata: false, data: "" },
-              { codice: "IO-3.4", descrizione: "Interagisco con gli altri per risolvere le sfide comuni: Organizzo almeno tre momenti di verifica con la mia Ptg/Eqp riportando o facendo riportare sul verbale le soluzioni alternative ai problemi che abbiamo individuato, riferendo poi tutto al CR.", completata: false, data: "" }
-            ],
-            RE: [
-              { codice: "RE-3.1", descrizione: "Sono d’esempio e promuovo occasioni di conivolgimento nel gruppo: Organizzo e conduco 2 momenti o attività di confronto e discussione di cui uno di Ptg/Eqp e dopo uno con tutto il Reparto.", completata: false, data: "" },
-              { codice: "RE-3.2", descrizione: "Trasmetto e riconosco le mie emozioni: Con l'aiuto dello staff, organizzo e poi gestisco un'attività sulla sessualità ed affettività da proporre durante un'uscita in Reparto.", completata: false, data: "" },
-              { codice: "RE-3.3", descrizione: "Creo un ambiente sicuro, accogliente e pacifico per tutti: Coordino gli altri CP/VCP per organizzare e gestire, con l’aiuto dello Staff, un’attività di accoglienza o conoscenza (...).", completata: false, data: "" },
-              { codice: "RE-3.4", descrizione: "Valorizzo le idee e le caratteristiche dei miei compagni: Per tre mesi mi occupo di raccontare le esperienze vissute in Ptg/Eqp/Reparto (...), ricordando le gesta e caratteristiche dei miei compagni.", completata: false, data: "" }
-            ],
-            IM: [
-              { codice: "IM-3.1", descrizione: "Coordino i progetti di gruppo, valorizzando i miei collaboratori: Propongo e guido la mia Ptg/Eqp nella conquista di una specialità di Ptg/Eqp.", completata: false, data: "" },
-              { codice: "IM-3.2", descrizione: "Condivido competenze ed esperienze con il resto del gruppo: Organizzo un momento di trapasso nozioni in Ptg/Eqp/Reparto su un aspetto specifico o innovativo per una tecnica (anche non scout) in cui sono competente.", completata: false, data: "" },
-              { codice: "IM-3.3", descrizione: "Porto avanti le mie idee democraticamente e nel rispetto dell'opinione altrui: Propongo, progetto e conduco un confronto o dibattito in cui coinvolgo Ptg/Eqp/III tracce/CdR/Alta ptg, su un tema a me caro.", completata: false, data: "" },
-              { codice: "IM-3.4", descrizione: "Immagino, pianifico e realizzo i miei obiettivi e quelli del gruppo: Pianifico e gestisco la partecipazione di Ptg/Eqp/CdR/Alta ptg ad un evento legato ad un tema che a me interessa, proponendoci per svolgere per l’occasione un servizio.", completata: false, data: "" }
-            ]
-          }
-        }
-      ]
+  <!-- Firebase SDK (usa le tue versioni e config qui sotto) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    // Firebase config: metti qui la tua config personale
+    const firebaseConfig = {
+      apiKey: "TUO_API_KEY",
+      authDomain: "TUO_AUTH_DOMAIN",
+      projectId: "TUO_PROJECT_ID",
+      storageBucket: "TUO_STORAGE_BUCKET",
+      messagingSenderId: "TUO_MESSAGING_SENDER_ID",
+      appId: "TUO_APP_ID"
     };
 
-    // Funzione per creare il markup delle tracce, direzioni, sfide e note
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Qui i dati statici per descrizioni sfide, da incollare (li riduco per brevità, ma metti tutti i testi che vuoi)
+    const tracce = [
+      {
+        nome: "Traccia1",
+        direzioni: {
+          IO: [
+            { id: "IO-1.1", descrizione: "Conosco il mio corpo: Scelgo un’attività fisica..." },
+            { id: "IO-1.2", descrizione: "Sono consapevole delle azioni e dei comportamenti..." },
+            { id: "IO-1.3", descrizione: "Riconosco le emozioni: Supporto il CP/CE..." },
+            { id: "IO-1.4", descrizione: "Esprimo liberamente la mia creatività: Trovo o costruisco..." }
+          ],
+          RE: [
+            { id: "RE-1.1", descrizione: "Riconosco il valore delle regole: Scelgo 3 articoli..." },
+            { id: "RE-1.2", descrizione: "Comunico il mio punto di vista: Mi occupo di organizzare..." },
+            { id: "RE-1.3", descrizione: "Partecipo attivamente alla vita del gruppo..." },
+            { id: "RE-1.4", descrizione: "Riconosco l'unicità e la peculiarità degli altri..." }
+          ],
+          IM: [
+            { id: "IM-1.1", descrizione: "Identifico dei progetti personali..." },
+            { id: "IM-1.2", descrizione: "Scopro quali sono le mie competenze..." },
+            { id: "IM-1.3", descrizione: "Osservo criticamente il contesto in cui opero..." },
+            { id: "IM-1.4", descrizione: "Mi approccio con curiosità alle novità..." }
+          ]
+        }
+      },
+      {
+        nome: "Traccia2",
+        direzioni: {
+          IO: [
+            { id: "IO-2.1", descrizione: "Esploro i limiti del mio corpo confrontandomi con me stesso..." },
+            { id: "IO-2.2", descrizione: "Identifico le motivazioni dietro le mie azioni..." },
+            { id: "IO-2.3", descrizione: "Esploro con curiosità le esperienze che vivo..." },
+            { id: "IO-2.4", descrizione: "Sono aperto a mettere in discussione le mie idee ed opinioni..." }
+          ],
+          RE: [
+            { id: "RE-2.1", descrizione: "Mi chiedo il perché delle regole..." },
+            { id: "RE-2.2", descrizione: "Utilizzo con consapevolezza le varie modalità di comunicazione..." },
+            { id: "RE-2.3", descrizione: "Vivo serenamente il confronto con l’altro..." },
+            { id: "RE-2.4", descrizione: "Conosco e rispetto i bisogni e le necessità di chi mi sta intorno..." }
+          ],
+          IM: [
+            { id: "IM-2.1", descrizione: "Contribuisco attivamente ai progetti di gruppo..." },
+            { id: "IM-2.2", descrizione: "Sono parte attiva nel gruppo..." },
+            { id: "IM-2.3", descrizione: "Partecipo alle decisioni strategiche del gruppo..." },
+            { id: "IM-2.4", descrizione: "Confronto più punti di vista per strutturare la mia opinione..." }
+          ]
+        }
+      },
+      {
+        nome: "Traccia3",
+        direzioni: {
+          IO: [
+            { id: "IO-3.1", descrizione: "Affronto le sfide che incontro con serenità..." },
+            { id: "IO-3.2", descrizione: "Sono coerente e d'esempio in tutti gli ambienti..." },
+            { id: "IO-3.3", descrizione: "Riconosco l'importanza del mio benessere..." },
+            { id: "IO-3.4", descrizione: "Interagisco con gli altri per risolvere le sfide comuni..." }
+          ],
+          RE: [
+            { id: "RE-3.1", descrizione: "Sono d’esempio e promuovo occasioni di coinvolgimento nel gruppo..." },
+            { id: "RE-3.2", descrizione: "Trasmetto e riconosco le mie emozioni..." },
+            { id: "RE-3.3", descrizione: "Creo un ambiente sicuro, accogliente e pacifico per tutti..." },
+            { id: "RE-3.4", descrizione: "Valorizzo le idee e le caratteristiche dei miei compagni..." }
+          ],
+          IM: [
+            { id: "IM-3.1", descrizione: "Coordino i progetti di gruppo, valorizzando i miei collaboratori..." },
+            { id: "IM-3.2", descrizione: "Condivido competenze ed esperienze con il resto del gruppo..." },
+            { id: "IM-3.3", descrizione: "Porto avanti le mie idee democraticamente..." },
+            { id: "IM-3.4", descrizione: "Immagino, pianifico e realizzo i miei obiettivi e quelli del gruppo..." }
+          ]
+        }
+      }
+    ];
+
+    // Crea markup form dinamico in #progressioneContainer
     function creaMarkupProgressione() {
-      const container = document.getElementById('progressioneContainer');
-      container.innerHTML = '';
+      const container = document.getElementById("progressioneContainer");
+      container.innerHTML = "";
+      tracce.forEach((traccia, i) => {
+        const divTraccia = document.createElement("div");
+        divTraccia.className = "traccia";
 
-      modelloProgressione.tracce.forEach((traccia, i) => {
-        const divTraccia = document.createElement('div');
-        divTraccia.className = 'traccia';
-
-        const h3 = document.createElement('h3');
-        h3.textContent = traccia.nome;
+        const h3 = document.createElement("h3");
+        h3.textContent = `Traccia ${i + 1}`;
         divTraccia.appendChild(h3);
 
-        // Per ogni direzione (IO, RE, IM)
-        for (const [direzione, sfide] of Object.entries(traccia.direzioni)) {
-          const divDir = document.createElement('div');
-          divDir.className = 'direzione';
+        for (const direzione of ["IO", "RE", "IM"]) {
+          const divDir = document.createElement("div");
+          divDir.className = "direzione";
 
-          const h4 = document.createElement('h4');
+          const h4 = document.createElement("h4");
           h4.textContent = direzione;
           divDir.appendChild(h4);
 
-          sfide.forEach((sfida, idx) => {
-            const divSfida = document.createElement('div');
-            divSfida.className = 'sfida';
+          traccia.direzioni[direzione].forEach((sfida, idx) => {
+            const divSfida = document.createElement("div");
+            divSfida.className = "sfida";
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `${traccia.nome}-${direzione}-${sfida.codice}`;
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `checkbox-${direzione}-${i + 1}-${idx + 1}`;
             checkbox.dataset.tracciaIndex = i;
             checkbox.dataset.direzione = direzione;
             checkbox.dataset.sfidaIndex = idx;
 
-            const label = document.createElement('label');
+            const label = document.createElement("label");
             label.htmlFor = checkbox.id;
             label.textContent = sfida.descrizione;
 
-            const dataInput = document.createElement('input');
-            dataInput.type = 'date';
+            const dataInput = document.createElement("input");
+            dataInput.type = "date";
             dataInput.id = `${checkbox.id}-data`;
             dataInput.dataset.tracciaIndex = i;
             dataInput.dataset.direzione = direzione;
             dataInput.dataset.sfidaIndex = idx;
-            dataInput.style.marginLeft = '0.5em';
+            dataInput.style.marginLeft = "0.5em";
 
             divSfida.appendChild(checkbox);
             divSfida.appendChild(label);
@@ -227,28 +195,17 @@
             divDir.appendChild(divSfida);
           });
 
-          // Note sotto ogni direzione (se vuoi, lo spostiamo sotto traccia)
-          /*
-          const noteLabel = document.createElement('label');
-          noteLabel.textContent = 'Note:';
-          const noteTextarea = document.createElement('textarea');
-          noteTextarea.id = `${traccia.nome}-${direzione}-note`;
-          noteTextarea.dataset.tracciaIndex = i;
-          noteTextarea.dataset.direzione = direzione;
-          divDir.appendChild(noteLabel);
-          divDir.appendChild(noteTextarea);
-          */
-
           divTraccia.appendChild(divDir);
         }
 
         // Note dopo ogni traccia
-        const noteLabel = document.createElement('label');
-        noteLabel.textContent = 'Note Traccia:';
-        const noteTextarea = document.createElement('textarea');
-        noteTextarea.id = `${traccia.nome}-note`;
+        const noteLabel = document.createElement("label");
+        noteLabel.textContent = "Note Traccia:";
+        const noteTextarea = document.createElement("textarea");
+        noteTextarea.id = `Traccia${i + 1}-note`;
         noteTextarea.dataset.tracciaIndex = i;
-        noteTextarea.style.marginTop = '0.5em';
+        noteTextarea.style.marginTop = "0.5em";
+
         divTraccia.appendChild(noteLabel);
         divTraccia.appendChild(noteTextarea);
 
@@ -256,10 +213,115 @@
       });
     }
 
-    // Chiama subito la funzione per caricare il markup
     creaMarkupProgressione();
 
-    // Qui poi andrai ad aggiungere codice per caricare/salvare dati, gestire eventi etc.
+    // Gestione Firebase e dati
+
+    let progressioneData = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log("Utente loggato:", user.uid);
+        await caricaDatiProgressione(user.uid);
+      } else {
+        alert("Devi essere loggato per accedere a questa pagina.");
+        window.location.href = "login.html";
+      }
+    });
+
+    async function caricaDatiProgressione(uid) {
+      try {
+        const docRef = doc(db, "progressioni", uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          progressioneData = docSnap.data();
+          console.log("Dati progressione caricati:", progressioneData);
+          popolaForm(progressioneData);
+        } else {
+          console.log("Nessun dato progressione trovato, creo struttura vuota.");
+          progressioneData = creaStrutturaVuota();
+          popolaForm(progressioneData);
+        }
+      } catch (error) {
+        console.error("Errore caricamento dati progressione:", error);
+      }
+    }
+
+    function creaStrutturaVuota() {
+      return {
+        promessa: "",
+        ruolo: "",
+        giglio: "",
+        noteGiglio: "",
+        tracce: [
+          { note: "", direzioni: { IO: [], RE: [], IM: [] } },
+          { note: "", direzioni: { IO: [], RE: [], IM: [] } },
+          { note: "", direzioni: { IO: [], RE: [], IM: [] } }
+        ]
+      };
+    }
+
+    function popolaForm(data) {
+      document.getElementById("promessa").value = data.promessa || "";
+      if (data.ruolo) {
+        const radio = document.querySelector(`input[name="ruolo"][value="${data.ruolo}"]`);
+        if (radio) radio.checked = true;
+      }
+      document.getElementById("giglio").value = data.giglio || "";
+      document.getElementById("noteGiglio").value = data.noteGiglio || "";
+
+      data.tracce.forEach((traccia, i) => {
+        if (traccia.note) {
+          const noteArea = document.getElementById(`Traccia${i + 1}-note`);
+          if (noteArea) noteArea.value = traccia.note;
+        }
+        ["IO", "RE", "IM"].forEach(direzione => {
+          traccia.direzioni[direzione].forEach((sfida, idx) => {
+            const checkbox = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}`);
+            if (checkbox) checkbox.checked = sfida.completata || false;
+
+            const dataInput = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}-data`);
+            if (dataInput) dataInput.value = sfida.data || "";
+          });
+        });
+      });
+    }
+
+    async function salvaDati() {
+      progressioneData.promessa = document.getElementById("promessa").value;
+      const ruoloRadio = document.querySelector('input[name="ruolo"]:checked');
+      progressioneData.ruolo = ruoloRadio ? ruoloRadio.value : "";
+      progressioneData.giglio = document.getElementById("giglio").value;
+      progressioneData.noteGiglio = document.getElementById("noteGiglio").value;
+
+      progressioneData.tracce.forEach((traccia, i) => {
+        const noteArea = document.getElementById(`Traccia${i + 1}-note`);
+        traccia.note = noteArea ? noteArea.value : "";
+
+        ["IO", "RE", "IM"].forEach(direzione => {
+          traccia.direzioni[direzione].forEach((sfida, idx) => {
+            const checkbox = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}`);
+            sfida.completata = checkbox ? checkbox.checked : false;
+
+            const dataInput = document.getElementById(`checkbox-${direzione}-${i + 1}-${idx + 1}-data`);
+            sfida.data = dataInput ? dataInput.value : "";
+          });
+        });
+      });
+
+      try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Utente non autenticato");
+        const docRef = doc(db, "progressioni", user.uid);
+        await setDoc(docRef, progressioneData);
+        alert("Dati salvati con successo.");
+      } catch (error) {
+        console.error("Errore salvataggio dati:", error);
+        alert("Errore durante il salvataggio dei dati.");
+      }
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", salvaDati);
   </script>
 </body>
 </html>

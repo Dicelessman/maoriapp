@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <link rel="stylesheet" href="style.css" />
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contatti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="https://unpkg.com/lucide@latest"></script>
+
+  
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <nav>
+  <a href="scheda_anagrafica.html"><i data-lucide="user"></i> Dati</a> |
+  <a href="scheda_contatti.html"><i data-lucide="phone"></i> Contatti</a> |
+  <a href="scheda_sanitari.html"><i data-lucide="heart-pulse"></i> Sanitari</a> |
+  <a href="scheda_progressione.html"><i data-lucide="mountain"></i> Progressione</a> |
+  <a href="scheda_specialita.html"><i data-lucide="star"></i> Specialità</a> |
+  <a href="scheda_eventi.html"><i data-lucide="calendar-check"></i> Eventi</a> |
+  <a href="scheda_pagamenti.html"><i data-lucide="wallet"></i> Pagamenti</a>
+</nav>
+
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Contatti</h1>
+      <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+    </div>
+
+    <form id="contattiForm" class="space-y-6">
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Genitore 1</h2>
+        <div class="mb-2">
+          <label class="block font-semibold" for="genitore1_nome">Nome</label>
+          <input type="text" id="genitore1_nome" name="genitore1_nome" class="w-full p-2 border rounded" />
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <input type="email" id="genitore1_email" name="genitore1_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="gen1_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <label class="block font-semibold flex-grow" for="genitore1_telefono">Telefono</label>
+          <input type="tel" id="genitore1_telefono" name="genitore1_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="gen1_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="gen1_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Genitore 2</h2>
+        <div class="mb-2">
+          <input type="text" id="genitore2_nome" name="genitore2_nome" class="w-full p-2 border rounded" placeholder="Nome" />
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <input type="email" id="genitore2_email" name="genitore2_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="gen2_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <input type="tel" id="genitore2_telefono" name="genitore2_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="gen2_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="gen2_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-2">Esploratore</h2>
+        <div class="mb-2 flex items-center gap-2">
+          <input type="email" id="esploratore_email" name="esploratore_email" class="flex-grow p-2 border rounded" placeholder="Email" />
+          <button type="button" id="expl_email_write_btn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" title="Scrivi email">📧</button>
+        </div>
+        <div class="mb-2 flex items-center gap-2">
+          <input type="tel" id="esploratore_telefono" name="esploratore_telefono" class="flex-grow p-2 border rounded" />
+          <button type="button" id="expl_phone_btn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" title="Chiama">📞</button>
+          <button type="button" id="expl_whatsapp_btn" class="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800" title="WhatsApp">🟢</button>
+        </div>
+      </section>
+
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Salva</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { db } from './firebaseConfig.js';
+    import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const auth = getAuth();
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const form = document.getElementById('contattiForm');
+
+    logoutBtn.addEventListener('click', async () => {
+      console.log("Logout clicked");
+      try {
+        await signOut(auth);
+        console.log("Logout successful");
+        window.location.href = 'login.html';
+      } catch (e) {
+        console.error("Logout error:", e);
+        alert("Errore durante il logout");
+      }
+    });
+
+    // Helper per i pulsanti chiamata/whatsapp
+    function setupCallWhatsappButtons(phoneInputId, phoneBtnId, whatsappBtnId) {
+      const phoneInput = document.getElementById(phoneInputId);
+      const phoneBtn = document.getElementById(phoneBtnId);
+      const whatsappBtn = document.getElementById(whatsappBtnId);
+
+      phoneBtn.addEventListener('click', () => {
+        if (!phoneInput.value.trim()) {
+          alert("Numero non inserito");
+          return;
+        }
+        console.log(`Chiamata a ${phoneInput.value.trim()}`);
+        window.location.href = `tel:${phoneInput.value.trim()}`;
+      });
+      whatsappBtn.addEventListener('click', () => {
+        if (!phoneInput.value.trim()) {
+          alert("Numero non inserito");
+          return;
+        }
+        let num = phoneInput.value.replace(/\D/g,'');
+        if(num.startsWith('0')) num = num.slice(1);
+        console.log(`WhatsApp a ${num}`);
+        window.open(`https://wa.me/${num}`, '_blank');
+      });
+    }
+
+    // Helper per il pulsante email
+    function setupEmailWriteButton(emailInputId, emailBtnId) {
+      const emailInput = document.getElementById(emailInputId);
+      const emailBtn = document.getElementById(emailBtnId);
+      emailBtn.addEventListener('click', () => {
+        if (!emailInput.value.trim()) {
+          alert("Email non inserita");
+          return;
+        }
+        console.log(`Scrivi email a ${emailInput.value.trim()}`);
+        window.location.href = `mailto:${emailInput.value.trim()}`;
+      });
+    }
+
+    // Setup pulsanti
+    setupCallWhatsappButtons('genitore1_telefono', 'gen1_phone_btn', 'gen1_whatsapp_btn');
+    setupCallWhatsappButtons('genitore2_telefono', 'gen2_phone_btn', 'gen2_whatsapp_btn');
+    setupCallWhatsappButtons('esploratore_telefono', 'expl_phone_btn', 'expl_whatsapp_btn');
+
+    setupEmailWriteButton('genitore1_email', 'gen1_email_write_btn');
+    setupEmailWriteButton('genitore2_email', 'gen2_email_write_btn');
+    setupEmailWriteButton('esploratore_email', 'expl_email_write_btn');
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("Utente non loggato, redirect a login");
+        return window.location.href = 'login.html';
+      }
+      console.log("Utente loggato:", user.uid);
+
+      const uidParam = new URLSearchParams(window.location.search).get('uid') || user.uid;
+
+      try {
+        const userRef = doc(db, "utenti", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+          alert("Utente non trovato.");
+          return window.location.href = 'login.html';
+        }
+        const currentUser = userSnap.data();
+        console.log("Current user:", currentUser);
+
+        if (currentUser.ruolo !== "staff" && uidParam !== user.uid) {
+          alert("Accesso negato");
+          return window.location.href = 'login.html';
+        }
+
+        const targetRef = doc(db, "utenti", uidParam);
+        const targetSnap = await getDoc(targetRef);
+        if (!targetSnap.exists()) {
+          alert("Scheda utente non trovata.");
+          return;
+        }
+        const scheda = targetSnap.data();
+
+        // Popola campi contatti, con sicurezza su datiScheda.contatti
+        const contatti = (scheda.datiScheda && scheda.datiScheda.contatti) || {};
+
+        form.genitore1_nome.value = contatti.genitore1_nome || "";
+        form.genitore1_email.value = contatti.genitore1_email || "";
+        form.genitore1_telefono.value = contatti.genitore1_telefono || "";
+
+        form.genitore2_nome.value = contatti.genitore2_nome || "";
+        form.genitore2_email.value = contatti.genitore2_email || "";
+        form.genitore2_telefono.value = contatti.genitore2_telefono || "";
+
+        form.esploratore_email.value = contatti.esploratore_email || "";
+        form.esploratore_telefono.value = contatti.esploratore_telefono || "";
+
+        let readOnly = false;
+        if (currentUser.ruolo !== "staff" && uidParam === user.uid) {
+          readOnly = true;
+          for (const element of form.elements) {
+            if (element.tagName === "INPUT") element.disabled = true;
+          }
+          form.querySelector('button[type="submit"]').style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error("Errore caricamento dati:", error);
+        alert("Errore durante il caricamento dei dati.");
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log("Salvataggio contatti...");
+
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          alert("Utente non loggato");
+          return window.location.href = 'login.html';
+        }
+
+        const uidParam = new URLSearchParams(window.location.search).get('uid') || user.uid;
+
+        const userRef = doc(db, "utenti", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) {
+          alert("Utente non trovato.");
+          return window.location.href = 'login.html';
+        }
+        const currentUser = userSnap.data();
+
+        if (currentUser.ruolo !== "staff" && uidParam !== user.uid) {
+          alert("Non autorizzato a salvare questa scheda");
+          return;
+        }
+
+        const targetRef = doc(db, "utenti", uidParam);
+
+        // Costruiamo solo la parte contatti, in merge con datiScheda
+        const contattiAggiornati = {
+          genitore1_nome: form.genitore1_nome.value,
+          genitore1_email: form.genitore1_email.value,
+          genitore1_telefono: form.genitore1_telefono.value,
+          genitore2_nome: form.genitore2_nome.value,
+          genitore2_email: form.genitore2_email.value,
+          genitore2_telefono: form.genitore2_telefono.value,
+          esploratore_email: form.esploratore_email.value,
+          esploratore_telefono: form.esploratore_telefono.value,
+        };
+
+        // Aggiorniamo solo la sottostruttura datiScheda.contatti (merge profondo via spread)
+        await setDoc(targetRef, {
+          datiScheda: {
+            contatti: contattiAggiornati
+          }
+        }, { merge: true });
+
+        console.log("Salvataggio riuscito");
+        alert("Contatti salvati con successo.");
+      } catch (error) {
+        console.error("Errore salvataggio contatti:", error);
+        alert("Errore durante il salvataggio.");
+      }
+    });
+  </script>
+</body>
+</html>

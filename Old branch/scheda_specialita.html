@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Specialità</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body>
+  <nav>
+    <a href="scheda_anagrafica.html"><i data-lucide="user"></i> Dati</a> |
+    <a href="scheda_contatti.html"><i data-lucide="phone"></i> Contatti</a> |
+    <a href="scheda_sanitari.html"><i data-lucide="heart-pulse"></i> Sanitari</a> |
+    <a href="scheda_progressione.html"><i data-lucide="mountain"></i> Progressione</a> |
+    <a href="scheda_specialita.html"><i data-lucide="star"></i> Specialità</a> |
+    <a href="scheda_eventi.html"><i data-lucide="calendar-check"></i> Eventi</a> |
+    <a href="scheda_pagamenti.html"><i data-lucide="wallet"></i> Pagamenti</a>
+  </nav>
+
+  <h2>Specialità</h2><div id="contenuto-specialita"><p>Questa sezione sarà disponibile a breve.</p></div>
+
+  <button id="logout-button">Logout</button>
+
+  <script src="firebase.js"></script>
+  <script>
+    window.onload = () => {
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const uid = new URLSearchParams(window.location.search).get("uid");
+        const currentUserUid = user.uid;
+        const isStaff = localStorage.getItem("role") === "staff";
+        const explorerUid = isStaff && uid ? uid : currentUserUid;
+
+        const logoutButton = document.getElementById("logout-button");
+        logoutButton.addEventListener("click", () => {
+          firebase.auth().signOut().then(() => {
+            window.location.href = "login.html";
+          });
+        });
+
+        // Logica da implementare in futuro
+      });
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
